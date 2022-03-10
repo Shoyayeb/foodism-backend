@@ -26,7 +26,23 @@ async function run() {
             const cursor = foodsCollection.find({});
             const foods = await cursor.toArray();
             res.send(foods);
-        })
+        });
+        // get api for getting single food
+        app.get("/foods/:id", async (req, res) => {
+            const id = req.params.id;
+            console.log('====================================');
+            console.log(id);
+            console.log('====================================');
+            const query = { _id: ObjectId(id) };
+            const food = await foodsCollection.findOne(query);
+            res.json(food);
+        });
+        // post api for adding services
+        app.post("/addfood", async (req, res) => {
+            const food = req.body;
+            const result = await foodsCollection.insertOne(food);
+            res.json(result);
+        });
     } finally {
         // await client.close();
     }
