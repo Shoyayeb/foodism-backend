@@ -20,6 +20,7 @@ async function run() {
         await client.connect();
         const database = client.db("foodism");
         const foodsCollection = database.collection("foods");
+        const orderedFoodCollection = database.collection("orders")
 
         // get api to getting foods
         app.get("/foods", async (req, res) => {
@@ -27,20 +28,37 @@ async function run() {
             const foods = await cursor.toArray();
             res.send(foods);
         });
+        // get api for getting booked services
+        app.get("/orders", async (req, res) => {
+            const cursor = orderedFoodCollection.find({});
+            const orders = await cursor.toArray();
+            res.send(orders);
+        });
         // get api for getting single food
         app.get("/foods/:id", async (req, res) => {
             const id = req.params.id;
-            console.log('====================================');
-            console.log(id);
-            console.log('====================================');
             const query = { _id: ObjectId(id) };
             const food = await foodsCollection.findOne(query);
             res.json(food);
+        });
+        // get api for only users order
+        app.get("/usersorder/:id", async (req, res) => {
+            const id = req.params.id;
+            const query = { uid: (id) };
+            const cursor = await orderedFoodCollection.find(query);
+            const foods = await cursor.toArray();
+            res.json(foods);
         });
         // post api for adding services
         app.post("/addfood", async (req, res) => {
             const food = req.body;
             const result = await foodsCollection.insertOne(food);
+            res.json(result);
+        });
+        // post api for ordering food
+        app.post("/orderfood", async (req, res) => {
+            const food = req.body;
+            const result = await orderedFoodCollection.insertOne(food);
             res.json(result);
         });
     } finally {
