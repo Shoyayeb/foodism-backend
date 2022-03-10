@@ -61,6 +61,13 @@ async function run() {
             const result = await orderedFoodCollection.insertOne(food);
             res.json(result);
         });
+        // delete api for remove order
+        app.delete('/removeorder/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) };
+            const result = await orderedFoodCollection.deleteOne(query);
+            res.json(result);
+        })
     } finally {
         // await client.close();
     }
@@ -69,7 +76,7 @@ async function run() {
 run().catch(console.dir)
 
 app.get("/", (req, res) => {
-    res.send("server running")
+    res.send("server running on", port)
 });
 app.listen(port, () => {
     console.log('====================================');
