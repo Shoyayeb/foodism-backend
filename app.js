@@ -6,11 +6,17 @@ const ObjectId = require("mongodb").ObjectId;
 require("dotenv").config();
 
 const app = express();
-
-app.use(cors());
+const corsOpts = {
+    origin: '*',
+    credentials: true,
+    methods: ['GET', 'POST', 'HEAD', 'PUT', 'PATCH', 'DELETE'],
+    allowedHeaders: ['Content-Type'],
+    exposedHeaders: ['Content-Type'],
+  };
+app.use(cors(corsOpts));
 app.use(express.json());
 
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 4005;
 const uri = `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@cluster0.4f4qc.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 
@@ -76,7 +82,9 @@ async function run() {
 run().catch(console.dir)
 
 app.get("/", (req, res) => {
-    res.send("server running on", port)
+    // res.send("server running on", port)
+    res.status(200).send(`server running on ${port}`);
+    // res.send(`server running on ${port}`);
 });
 app.listen(port, () => {
     console.log('====================================');
